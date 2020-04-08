@@ -26,7 +26,6 @@ renderComponent(menuElement, createMenuTemplate(), `beforeend`);
 const filters = generateFilter();
 
 renderComponent(mainElement, createFiltersTemplate(filters), `beforeend`);
-
 renderComponent(mainElement, renderBoardContainer(), `beforeend`);
 
 const board = mainElement.querySelector(`.board`);
