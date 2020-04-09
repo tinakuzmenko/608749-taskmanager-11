@@ -38,9 +38,7 @@ const getRandomDate = () => {
 
 const generateRepeatingDays = () => {
   const dayKeys = Object.keys(DefaultRepeatingDays);
-  const repeatingDay = dayKeys.map((day) => {
-    return {[day]: Math.random() > 0.5};
-  });
+  const repeatingDay = dayKeys.map((day) => ({[day]: Math.random() > 0.5}));
   return Object.assign({}, ...repeatingDay);
 };
 
