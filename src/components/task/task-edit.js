@@ -1,7 +1,7 @@
 import {MONTH_NAMES, DAYS, COLORS} from "../../helpers/constants.js";
 import {createColorsMarkup} from './create-colors-markup.js';
 import {createRepeatingDaysMarkup} from './create-repeating-days-markup.js';
-import {formatTime} from "../../helpers/utils.js";
+import {createElement, formatTime} from "../../helpers/utils.js";
 
 const createTaskEditTemplate = (task) => {
   const {description, dueDate, color, repeatingDays} = task;
@@ -44,9 +44,7 @@ const createTaskEditTemplate = (task) => {
                       <button class="card__date-deadline-toggle" type="button">
                         date: <span class="card__date-status">${isDateShowing ? `yes` : `no`}</span>
                       </button>
-                      ${
-  isDateShowing ?
-    `<fieldset class="card__date-deadline">
+                      ${isDateShowing ? `<fieldset class="card__date-deadline">
                         <label class="card__input-deadline-wrap">
                           <input
                             class="card__date"
@@ -56,18 +54,17 @@ const createTaskEditTemplate = (task) => {
                             value="${date} ${time}"
                           />
                         </label>
-                      </fieldset>`
-    : ``
-}
+                      </fieldset>` : ``}
+
                       <button class="card__repeat-toggle" type="button">
                         repeat:<span class="card__repeat-status">yes</span>
                       </button>
 
-                      <fieldset class="card__repeat-days">
+                      ${isRepeatingTask ? `<fieldset class="card__repeat-days">
                         <div class="card__repeat-days-inner">
                           ${repeatingDaysMarkup}
                         </div>
-                      </fieldset>
+                      </fieldset>` : ``}
                     </div>
                   </div>
 
@@ -88,4 +85,25 @@ const createTaskEditTemplate = (task) => {
           </article>`;
 };
 
-export {createTaskEditTemplate};
+export default class TaskEdit {
+  constructor(task) {
+    this._task = task;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTaskEditTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
