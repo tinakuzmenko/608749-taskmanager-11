@@ -19,5 +19,9 @@ const MONTH_NAMES = [
   `December`,
 ];
 
+const Keycode = {
+  ESCAPE: `Escape`,
+};
 
-export {FILTER_NAMES, COLORS, DAYS, MONTH_NAMES};
+
+export {FILTER_NAMES, COLORS, DAYS, MONTH_NAMES, Keycode};

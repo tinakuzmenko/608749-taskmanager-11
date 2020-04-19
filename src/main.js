@@ -1,40 +1,64 @@
+import BoardComponent from "./components/board/board.js";
+import ButtonLoadMoreComponent from "./components/button-load-more/button-load-more.js";
 import FilterComponent from "./components/filter/filter.js";
+import NoTasksComponent from "./components/task/no-tasks.js";
 import SiteMenuComponent from "./components/menu/site-menu.js";
 import SortComponent from "./components/sort/sort.js";
 import TaskEditComponent from "./components/task/task-edit.js";
 import TaskComponent from "./components/task/task.js";
 import TasksComponent from "./components/task/tasks.js";
-import BoardComponent from "./components/board/board.js";
-import ButtonLoadMoreComponent from "./components/button-load-more/button-load-more.js";
 import {generateFilter} from "./components/filter/generate-filters.js";
 import {generateTasks} from "./components/task/generate-task.js";
 import {render, RenderPosition} from "./helpers/utils.js";
+import {Keycode} from "./helpers/constants.js";
 
 const TASK_COUNT = 22;
 const SHOWING_TASKS_COUNT_ON_START = 8;
 const SHOWING_TASKS_COUNT_BY_BUTTON = 8;
 
 const renderTask = (taskListElement, task) => {
-  const onEditButtonClick = () => {
+  const replaceTaskToEdit = () => {
     taskListElement.replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
   };
 
-  const onEditFormSubmit = () => {
+  const replaceEditToTask = () => {
     taskListElement.replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === Keycode.ESCAPE) {
+      replaceEditToTask();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
   };
 
   const taskComponent = new TaskComponent(task);
   const editButton = taskComponent.getElement().querySelector(`.card__btn--edit`);
-  editButton.addEventListener(`click`, onEditButtonClick);
+
+  editButton.addEventListener(`click`, () => {
+    replaceTaskToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
 
   const taskEditComponent = new TaskEditComponent(task);
   const editForm = taskEditComponent.getElement().querySelector(`form`);
-  editForm.addEventListener(`submit`, onEditFormSubmit);
+
+  editForm.addEventListener(`submit`, () => {
+    replaceEditToTask();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
 
   render(taskListElement, taskComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
 const renderBoard = (boardComponent, tasks) => {
+  const isAllTasksArchived = tasks.every((task) => task.isArchive);
+
+  if (isAllTasksArchived) {
+    render(boardComponent.getElement(), new NoTasksComponent().getElement(), RenderPosition.BEFOREEND);
+    return;
+  }
+
   render(boardComponent.getElement(), new SortComponent().getElement(), RenderPosition.BEFOREEND);
   render(boardComponent.getElement(), new TasksComponent().getElement(), RenderPosition.BEFOREEND);
 
