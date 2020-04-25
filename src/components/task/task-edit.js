@@ -1,7 +1,8 @@
 import {MONTH_NAMES, DAYS, COLORS} from "../../helpers/constants.js";
+import AbstractComponent from "../abstract-component.js";
 import {createColorsMarkup} from './create-colors-markup.js';
 import {createRepeatingDaysMarkup} from './create-repeating-days-markup.js';
-import {createElement, formatTime} from "../../helpers/utils.js";
+import {formatTime} from "../../helpers/utils.js";
 
 const createTaskEditTemplate = (task) => {
   const {description, dueDate, color, repeatingDays} = task;
@@ -85,25 +86,18 @@ const createTaskEditTemplate = (task) => {
           </article>`;
 };
 
-export default class TaskEdit {
+export default class TaskEdit extends AbstractComponent {
   constructor(task) {
+    super();
     this._task = task;
-    this._element = null;
   }
 
   getTemplate() {
     return createTaskEditTemplate(this._task);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setSubmitHandler(handler) {
+    this.getElement().querySelector(`form`)
+      .addEventListener(`submit`, handler);
   }
 }
