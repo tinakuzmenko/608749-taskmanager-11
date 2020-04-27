@@ -23,5 +23,10 @@ const Keycode = {
   ESCAPE: `Escape`,
 };
 
+const SortType = {
+  DEFAULT: `default`,
+  DATE_UP: `date-up`,
+  DATE_DOWN: `date-down`,
+};
 
-export {FILTER_NAMES, COLORS, DAYS, MONTH_NAMES, Keycode};
+export {FILTER_NAMES, COLORS, DAYS, MONTH_NAMES, Keycode, SortType};
