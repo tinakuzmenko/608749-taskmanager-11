@@ -54,27 +54,27 @@ export default class BoardController {
     this._loadMoreButtonComponent = new ButtonLoadMoreComponent();
   }
 
-  render(tasks) {
-    const renderButtonLoadMore = () => {
+  renderButtonLoadMore(tasks, showingTasksCount, taskListElement) {
+    if (this._loadMoreButtonComponent) {
+      remove(this._loadMoreButtonComponent);
+    }
+
+    render(this._container.getElement(), this._loadMoreButtonComponent);
+
+    this._loadMoreButtonComponent.setClickHandler(() =>{
+      const prevTasksCount = showingTasksCount;
+      showingTasksCount = showingTasksCount + SHOWING_TASKS_COUNT_BY_BUTTON;
+
+      tasks.slice(prevTasksCount, showingTasksCount)
+        .forEach((task) => renderTask(taskListElement, task));
+
       if (showingTasksCount >= tasks.length) {
-        return;
+        remove(this._loadMoreButtonComponent);
       }
+    });
+  }
 
-      render(container, this._loadMoreButtonComponent);
-
-      this._loadMoreButtonComponent.setClickHandler(() => {
-        const prevTasksCount = showingTasksCount;
-        showingTasksCount = showingTasksCount + SHOWING_TASKS_COUNT_BY_BUTTON;
-
-        tasks.slice(prevTasksCount, showingTasksCount)
-          .forEach((task) => renderTask(taskListElement, task));
-
-        if (showingTasksCount >= tasks.length) {
-          remove(this._loadMoreButtonComponent);
-        }
-      });
-    };
-
+  render(tasks) {
     const container = this._container.getElement();
     const isAllTasksArchived = tasks.every((task) => task.isArchive);
 
@@ -87,28 +87,28 @@ export default class BoardController {
     render(container, this._tasksComponent);
 
     const taskListElement = this._tasksComponent.getElement();
+
     let showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
-
-    tasks.slice(0, showingTasksCount)
-    .forEach((task) => {
-      renderTask(taskListElement, task);
-    });
-
-    renderButtonLoadMore(tasks);
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
       showingTasksCount = SHOWING_TASKS_COUNT_BY_BUTTON;
 
       const sortedTasks = getSortedTasks(tasks, sortType);
-
       taskListElement.innerHTML = ``;
 
       sortedTasks.slice(0, showingTasksCount)
-        .forEach((sortedTask) => {
-          renderTask(taskListElement, sortedTask);
-        });
+      .forEach((sortedTask) => {
+        renderTask(taskListElement, sortedTask);
+      });
 
-      renderButtonLoadMore(sortedTasks);
+      this.renderButtonLoadMore(sortedTasks, showingTasksCount, taskListElement);
     });
+
+    tasks.slice(0, showingTasksCount)
+      .forEach((task) => {
+        renderTask(taskListElement, task);
+      });
+
+    this.renderButtonLoadMore(tasks, showingTasksCount, taskListElement);
   }
 }
