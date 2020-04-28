@@ -45,6 +45,13 @@ const renderTask = (taskListElement, task) => {
   render(taskListElement, taskComponent);
 };
 
+const renderTasksOnBoard = (tasksArray, tasksStartCount, tasksEndCount, tasksBoard) => {
+  tasksArray.slice(tasksStartCount, tasksEndCount)
+      .forEach((task) => {
+        renderTask(tasksBoard, task);
+      });
+};
+
 export default class BoardController {
   constructor(container) {
     this._container = container;
@@ -65,8 +72,7 @@ export default class BoardController {
       const prevTasksCount = showingTasksCount;
       showingTasksCount = showingTasksCount + SHOWING_TASKS_COUNT_BY_BUTTON;
 
-      tasks.slice(prevTasksCount, showingTasksCount)
-        .forEach((task) => renderTask(taskListElement, task));
+      renderTasksOnBoard(tasks, prevTasksCount, showingTasksCount, taskListElement);
 
       if (showingTasksCount >= tasks.length) {
         remove(this._loadMoreButtonComponent);
@@ -96,19 +102,11 @@ export default class BoardController {
       const sortedTasks = getSortedTasks(tasks, sortType);
       taskListElement.innerHTML = ``;
 
-      sortedTasks.slice(0, showingTasksCount)
-      .forEach((sortedTask) => {
-        renderTask(taskListElement, sortedTask);
-      });
-
+      renderTasksOnBoard(sortedTasks, 0, showingTasksCount, taskListElement);
       this.renderButtonLoadMore(sortedTasks, showingTasksCount, taskListElement);
     });
 
-    tasks.slice(0, showingTasksCount)
-      .forEach((task) => {
-        renderTask(taskListElement, task);
-      });
-
+    renderTasksOnBoard(tasks, 0, showingTasksCount, taskListElement);
     this.renderButtonLoadMore(tasks, showingTasksCount, taskListElement);
   }
 }
