@@ -15,6 +15,7 @@ export default class BoardController {
 
     this._showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
     this._tasks = [];
+    this._showedTaskControllers = [];
     this._noTasksComponent = new NoTasksComponent();
     this._sortComponent = new SortComponent();
     this._tasksComponent = new TasksComponent();
@@ -44,7 +45,8 @@ export default class BoardController {
       const prevTasksCount = showingTasksCount;
       showingTasksCount = showingTasksCount + SHOWING_TASKS_COUNT_BY_BUTTON;
 
-      this._renderTasksOnBoard(tasks, prevTasksCount, showingTasksCount, taskListElement);
+      const newTasks = this._renderTasksOnBoard(tasks, prevTasksCount, showingTasksCount, taskListElement);
+      this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
 
       if (showingTasksCount >= tasks.length) {
         remove(this._loadMoreButtonComponent);
@@ -79,8 +81,10 @@ export default class BoardController {
     render(container, this._tasksComponent);
 
     const taskListElement = this._tasksComponent.getElement();
+    const newTasks = this._renderTasksOnBoard(tasks, 0, this._showingTasksCount, taskListElement);
+    this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
 
-    this._renderTasksOnBoard(tasks, 0, this._showingTasksCount, taskListElement);
+
     this._renderButtonLoadMore(tasks, this._showingTasksCount, taskListElement);
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
