@@ -27,6 +27,30 @@ export default class BoardController {
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
+  render(tasks) {
+    this._tasks = tasks;
+    this._taskListElement = this._tasksComponent.getElement();
+
+    const container = this._container.getElement();
+    const isAllTasksArchived = this._tasks.every((task) => task.isArchive);
+
+    if (isAllTasksArchived) {
+      render(container, this._noTasksComponent);
+      return;
+    }
+
+    render(container, this._sortComponent);
+    render(container, this._tasksComponent);
+
+    const newTasks = this._renderTasksOnBoard(this._tasks.slice(0, this._showingTasksCount), this._onDataChange, this._onViewChange);
+
+    this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
+
+    this._renderButtonLoadMore(tasks);
+
+    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+  }
+
   _renderTasksOnBoard(tasks, onDataChange, onViewChange) {
     return tasks.map((task) => {
       const taskController = new TaskController(this._taskListElement, onDataChange, onViewChange);
@@ -87,29 +111,5 @@ export default class BoardController {
 
     this._renderTasksOnBoard(sortedTasks.slice(0, this._showingTasksCount, this._onDataChange, this._onViewChange), this._onDataChange);
     this._renderButtonLoadMore(sortedTasks);
-  }
-
-  render(tasks) {
-    this._tasks = tasks;
-    this._taskListElement = this._tasksComponent.getElement();
-
-    const container = this._container.getElement();
-    const isAllTasksArchived = this._tasks.every((task) => task.isArchive);
-
-    if (isAllTasksArchived) {
-      render(container, this._noTasksComponent);
-      return;
-    }
-
-    render(container, this._sortComponent);
-    render(container, this._tasksComponent);
-
-    const newTasks = this._renderTasksOnBoard(this._tasks.slice(0, this._showingTasksCount), this._onDataChange, this._onViewChange);
-
-    this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
-
-    this._renderButtonLoadMore(tasks);
-
-    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 }
