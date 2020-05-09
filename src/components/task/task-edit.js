@@ -3,7 +3,7 @@ import AbstractSmartComponent from "../abstract-smart-component.js";
 import {createColorsMarkup} from './create-colors-markup.js';
 import {createRepeatingDaysMarkup} from './create-repeating-days-markup.js';
 import {formatTime} from "../../helpers/utils.js";
-import flatpickr from "flatpickr";
+import Flatpickr from "flatpickr";
 
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -152,7 +152,7 @@ export default class TaskEdit extends AbstractSmartComponent {
 
     if (this._isDateShowing) {
       const dateElement = this.getElement().querySelector(`.card__date`);
-      this._flatpickr = flatpickr(dateElement, {
+      this._flatpickr = new Flatpickr(dateElement, {
         altInput: true,
         allowInput: true,
         defaultDate: this._task.dueDate || `today`,

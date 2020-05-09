@@ -5,6 +5,9 @@ import TasksComponent from "../components/task/tasks.js";
 import TaskController from "./task.js";
 import {getSortedTasks} from "../helpers/utils.js";
 import {render, remove} from "../helpers/render.js";
+import flatpickr from "flatpickr";
+
+import "flatpickr/dist/flatpickr.min.css";
 
 const SHOWING_TASKS_COUNT_ON_START = 8;
 const SHOWING_TASKS_COUNT_BY_BUTTON = 8;
@@ -25,6 +28,7 @@ export default class BoardController {
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+    this._flatpickr = flatpickr(`.calendar`, {});
   }
 
   render(tasks) {
@@ -108,6 +112,9 @@ export default class BoardController {
     const sortedTasks = getSortedTasks(this._tasks, sortType);
 
     this._taskListElement.innerHTML = ``;
+
+    const flatpickers = document.querySelectorAll(`.flatpickr-calendar`);
+    flatpickers.forEach((flatpicker) => flatpicker.remove());
 
     this._renderTasksOnBoard(sortedTasks.slice(0, this._showingTasksCount, this._onDataChange, this._onViewChange), this._onDataChange);
     this._renderButtonLoadMore(sortedTasks);
