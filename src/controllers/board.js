@@ -92,6 +92,12 @@ export default class BoardController {
     this._buttonLoadMoreComponent.setClickHandler(this._onButtonLoadMoreClick);
   }
 
+  _cleanTasksBoard() {
+    this._taskListElement.innerHTML = ``;
+    const flatpickers = document.querySelectorAll(`.flatpickr-calendar`);
+    flatpickers.forEach((flatpicker) => flatpicker.remove());
+  }
+
   _onDataChange(taskController, oldData, newData) {
     const index = this._tasks.findIndex((item) => item === oldData);
 
@@ -113,11 +119,7 @@ export default class BoardController {
     this._showingTasks = [];
 
     const sortedTasks = getSortedTasks(this._tasks, sortType);
-
-    this._taskListElement.innerHTML = ``;
-
-    const flatpickers = document.querySelectorAll(`.flatpickr-calendar`);
-    flatpickers.forEach((flatpicker) => flatpicker.remove());
+    this._cleanTasksBoard();
 
     this._showedTaskControllers = this._renderTasksOnBoard(sortedTasks.slice(0, this._showingTasksCount));
     this._renderButtonLoadMore(sortedTasks);
