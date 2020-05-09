@@ -23,10 +23,12 @@ export default class BoardController {
     this._sortComponent = new SortComponent();
     this._tasksComponent = new TasksComponent();
     this._buttonLoadMoreComponent = new ButtonLoadMoreComponent();
+
     this._onButtonLoadMoreClick = this._onButtonLoadMoreClick.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._flatpickr = flatpickr(`.calendar`, {});
   }
@@ -46,7 +48,7 @@ export default class BoardController {
     render(container, this._sortComponent);
     render(container, this._tasksComponent);
 
-    const newTasks = this._renderTasksOnBoard(this._tasks.slice(0, this._showingTasksCount), this._onDataChange, this._onViewChange);
+    const newTasks = this._renderTasksOnBoard(this._tasks.slice(0, this._showingTasksCount));
 
     this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
 
@@ -55,9 +57,9 @@ export default class BoardController {
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
-  _renderTasksOnBoard(tasks, onDataChange, onViewChange) {
+  _renderTasksOnBoard(tasks) {
     return tasks.map((task) => {
-      const taskController = new TaskController(this._taskListElement, onDataChange, onViewChange);
+      const taskController = new TaskController(this._taskListElement, this._onDataChange, this._onViewChange);
 
       taskController.render(task);
 
@@ -69,7 +71,7 @@ export default class BoardController {
     this._prevTasksCount = this._showingTasksCount;
     this._showingTasksCount += SHOWING_TASKS_COUNT_BY_BUTTON;
 
-    const newTasks = this._renderTasksOnBoard(this._showingTasks.slice(this._prevTasksCount, this._showingTasksCount), this._onDataChange);
+    const newTasks = this._renderTasksOnBoard(this._showingTasks.slice(this._prevTasksCount, this._showingTasksCount));
 
     this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
 
@@ -107,7 +109,8 @@ export default class BoardController {
   }
 
   _onSortTypeChange(sortType) {
-    this._showingTasksCount = SHOWING_TASKS_COUNT_BY_BUTTON;
+    this._showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
+    this._showingTasks = [];
 
     const sortedTasks = getSortedTasks(this._tasks, sortType);
 
@@ -116,7 +119,7 @@ export default class BoardController {
     const flatpickers = document.querySelectorAll(`.flatpickr-calendar`);
     flatpickers.forEach((flatpicker) => flatpicker.remove());
 
-    this._renderTasksOnBoard(sortedTasks.slice(0, this._showingTasksCount, this._onDataChange, this._onViewChange), this._onDataChange);
+    this._showedTaskControllers = this._renderTasksOnBoard(sortedTasks.slice(0, this._showingTasksCount));
     this._renderButtonLoadMore(sortedTasks);
   }
 }
